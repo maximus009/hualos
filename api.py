@@ -5,6 +5,8 @@ import gevent
 from gevent.wsgi import WSGIServer
 from gevent.queue import Queue
 
+from urllib import unquote
+
 app = Flask(__name__)
 subscriptions = []
 
@@ -38,7 +40,8 @@ class ServerSentEvent(object):
 
 @app.route("/publish/epoch/end/", methods=['POST'])
 def publish():
-    payload = request.form.get('data')
+    
+    payload = unquote(request.data.split('=')[1]).replace('+','')
     try:
         data = json.loads(payload)
     except:
